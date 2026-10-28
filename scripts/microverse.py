@@ -33,7 +33,7 @@ CATALOG = [
 ]
 DEFAULT_FEEDS = [
     ('Proxmox community releases','https://github.com/community-scripts/ProxmoxVE/releases.atom'),
-    ('Anime schedule','https://animeschedule.net/rss'),
+    ('Anime schedule','https://animeschedule.net/subrss.xml'),
     ('Hacker News highlights','https://hnrss.org/newest?points=100'),
 ]
 SKILLS = [
