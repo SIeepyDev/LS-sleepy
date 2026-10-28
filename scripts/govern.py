@@ -85,9 +85,10 @@ def policy(name,op,action):
 def setmode(name,mode):
  if mode not in ('civil','sandbox','anarchy'):raise ValueError('Invalid mode')
  if name=='citadel' and mode!='civil':raise ValueError('Citadel remains civil')
- with connect() as cx:cx.execute('UPDATE realms SET mode=? WHERE name=?',(mode,name))
- event('GOVERNMENT',name,'MODE',mode)
- print(f'{name}: {mode} (host execution restrictions unchanged)')
+ capacity={'civil':1,'sandbox':2,'anarchy':3}[mode]
+ with connect() as cx:cx.execute('UPDATE realms SET mode=?,max_jobs=? WHERE name=?',(mode,capacity,name))
+ event('GOVERNMENT',name,'MODE',f'{mode},max_jobs={capacity}')
+ print(f'{name}: {mode}, max parallel realm jobs={capacity} (host restrictions unchanged)')
 
 def add(action,target='system',region='workshop'):
  if not authorized(region,action):raise ValueError(f'Policy blocked {region}/{action}')
@@ -249,7 +250,12 @@ def tick():
    with connect() as cx:
     candidates=cx.execute('SELECT * FROM jobs WHERE status="QUEUED" ORDER BY id LIMIT 80').fetchall()
     rows=[]
+    realm_caps={r['name']:r['max_jobs'] for r in cx.execute('SELECT name,max_jobs FROM realms WHERE active=1')}
+    selected_by_realm={}
     for j in candidates:
+     # Enforce a realm's independent concurrency cap, in addition to host pressure limits.
+     if j['realm'] not in realm_caps:continue
+     if selected_by_realm.get(j['realm'],0)>=realm_caps[j['realm']]:continue
      # Never run test and build (or publish and test) of the same project concurrently.
      if j['action'] in ('test','publish'):
       prerequisite='build' if j['action']=='test' else 'test'
@@ -257,6 +263,7 @@ def tick():
                      (j['target'],prerequisite,j['id'])).fetchone()
       if not prev or prev['status']!='PASS':continue
      rows.append(j)
+     selected_by_realm[j['realm']]=selected_by_realm.get(j['realm'],0)+1
      if len(rows)>=min(n,HARD_LIMITS['max_jobs_per_tick']):break
     for j in rows:cx.execute('UPDATE jobs SET status="RUNNING",started=? WHERE id=?',(STAMP(),j['id']))
    with ThreadPoolExecutor(max_workers=n) as ex:results=list(ex.map(job_exec,rows))
@@ -323,7 +330,16 @@ def jail_new():
    fields=line.split()
    if fields and re.search(r'alpine-.*amd64.*\.tar\.(gz|xz|zst)$',fields[0]):tar=fields[0];break
   if tar:break
- if not tar:raise ValueError('No cached Alpine template. Download through Proxmox UI or pveam first.')
+ if not tar:
+  # User-directed sandbox creation may fetch an official template; unattended cycles never do.
+  rc,_=run(['pveam','update'],60)
+  rc,available=run(['pveam','available','--section','system'],20)
+  names=[row.split()[1] for row in available.splitlines() if len(row.split())>=2 and re.search(r'^alpine-.*amd64.*\.tar\.(gz|xz|zst)$',row.split()[1])]
+  if not names:raise ValueError('No cached or downloadable Alpine template was found')
+  candidate=sorted(names)[-1]
+  rc,out=run(['pveam','download',templates[0],candidate],180)
+  if rc:raise ValueError(f'Official Alpine template download failed: {out[-400:]}')
+  tar=f'{templates[0]}:vztmpl/{candidate}'
  rc,s=run(['pvesh','get','/cluster/nextid'],12)
  vmid=s.strip().splitlines()[-1] if s.strip() else ''
  if rc or not vmid.isdigit():raise ValueError('Could not acquire free VMID')
