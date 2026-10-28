@@ -1,0 +1,21 @@
+{
+  "schema": "ls.anchor.v1",
+  "repo": "SIeepyDev/LS-sleepy",
+  "authority": "LS",
+  "index": "private-controller",
+  "role": "engineering",
+  "visibility": "public",
+  "links": {
+    "canonical_contract": "ls:contract:repo-anchor@1",
+    "domain_owner": "SIeepyDev/LS-sleepy"
+  },
+  "execution": {
+    "automatic_sync": false,
+    "automatic_writes": false,
+    "external_authorization_required": true
+  },
+  "privacy": {
+    "export_private_records": false,
+    "mirror_secrets": false
+  }
+}
