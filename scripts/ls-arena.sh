@@ -191,7 +191,7 @@ eye() {
       read -r num title <<< "$x"; tmux select-pane -t "atomic-arena:WORKERS.$num" -T "$title"
     done
   fi
-  tmux attach-session -t atomic-arena
+  if [ -n "${TMUX:-}" ]; then tmux switch-client -t atomic-arena; else tmux attach-session -t atomic-arena; fi
 }
 score() {
   dbinit
