@@ -1,0 +1,25 @@
+# Sensitive local configuration
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.local.example
+*.pem
+*.key
+
+# Common generated directories
+node_modules/
+.venv/
+__pycache__/
+.pytest_cache/
+.next/
+.turbo/
+dist/
+build/
+coverage/
+
+# Machine and editor transient files
+.DS_Store
+Thumbs.db
+.vscode/*.log
+.idea/workspace.xml
