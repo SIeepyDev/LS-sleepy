@@ -16,6 +16,13 @@ printf '%s  %s\n' "$EXPECTED_SHA256" "$ROOT/crew.py.tmp" | sha256sum -c -
 python3 -m py_compile "$ROOT/crew.py.tmp"
 mv -f "$ROOT/crew.py.tmp" "$ROOT/crew.py"
 chmod 644 "$ROOT/crew.py"
+LAB_SOURCE=https://raw.githubusercontent.com/SIeepyDev/LS-sleepy/39568d268a07f33ae4912706e415c0d13321f396/scripts/crewlxc.sh
+if curl -fsSLo "$ROOT/crewlxc.sh.tmp" "$LAB_SOURCE" && bash -n "$ROOT/crewlxc.sh.tmp"; then
+  install -m 755 "$ROOT/crewlxc.sh.tmp" /usr/local/bin/crewlxc
+  echo 'Installed crewlxc Proxmox lab helper'
+else
+  echo 'WARN crewlxc helper not installed; core Crew remains available'
+fi
 
 PORT=''
 WEB='/opt/ls-conquer/www/crew'
