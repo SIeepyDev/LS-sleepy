@@ -1,0 +1,38 @@
+{
+  "schema": "ls.division.v1",
+  "repository": "SIeepyDev/LS-sleepy",
+  "display_name": "Sleepy · Engineering Command",
+  "lane": "engineering",
+  "mission": "Build reusable components, pipelines and scalable systems",
+  "status": "INITIALIZED",
+  "visibility": "public",
+  "canonical_private_controller": "SIeepyDev/LS",
+  "permissions": {
+    "sandbox_experiments": true,
+    "automatic_release": false,
+    "production_changes": false,
+    "private_repo_access": false
+  },
+  "handshake": {
+    "outgoing": [
+      "candidate",
+      "scorecard",
+      "public_receipt",
+      "review_request"
+    ],
+    "incoming": [
+      "sanitized_task",
+      "approved_public_artifact"
+    ],
+    "transfers_require_explicit_authorization": true
+  },
+  "evidence": {
+    "required": [
+      "source_commit",
+      "tests",
+      "provenance",
+      "limitations"
+    ],
+    "status": "NOT_YET_RUNTIME_VERIFIED"
+  }
+}
