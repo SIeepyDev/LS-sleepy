@@ -57,3 +57,20 @@ Run `crew test`, followed by `crew jobs`, `crew stats`, `curl -I http://127.0.0.
 ## Design constraint
 
 This engine is light orchestration, not a replacement for full CI, OS-level isolation or real Kubernetes/autoscaling. Use a dedicated Proxmox LXC for executing arbitrary downloaded builds. Avoid spending 12 GB of RAM on many always-on services when event-driven tasks can do the same work.
+
+
+## Proxmox LXC production (explicit, never automatically destroys other LXCs)
+
+The installer now also deploys `crewlxc` from the pinned GitHub commit `39568d2`. It creates a 256 MiB RAM / 2 GiB rootfs unprivileged Alpine LXC using Proxmox native storage discovery.
+
+```sh
+crewlxc probe
+crewlxc new alpine
+crewlxc test VMID
+crewlxc enter VMID
+crewlxc recycle VMID
+```
+
+The recycle operation accepts only LXCs tagged `crewlab`; it exports config and package inventory before destroying the lab. Any new container is created only on the explicit `crewlxc new alpine` command. The command is not part of the recurring systemd timer.
+
+Note: this helper's Proxmox create/start/install process is ready for on-host verification; the local test container was not a Proxmox host, so no claim of live T530 LXC provisioning is made.
