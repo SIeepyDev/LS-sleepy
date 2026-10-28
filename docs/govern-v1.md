@@ -21,7 +21,7 @@ curl -fsSLo /tmp/govern.sh https://raw.githubusercontent.com/SIeepyDev/LS-sleepy
 - `gov policy list` — permissions of each region
 - `gov policy deny beach publish` — revoke permission (recorded)
 - `gov policy permit beach publish` — grant an approved built-in action (recorded)
-- `gov mode beach anarchy` — change sandbox region mode; no root bypass
+- `gov mode beach anarchy` — change sandbox region mode and realm concurrency ceiling (1/2/3); no root bypass
 - `gov council` — governing decisions & published projects
 - `gov challenge` — simulated policy-break attempts, no destructive execution
 - `gov world galaxy beach` — create a playable static project through BUILD → TEST → PUBLISH
@@ -30,7 +30,7 @@ curl -fsSLo /tmp/govern.sh https://raw.githubusercontent.com/SIeepyDev/LS-sleepy
 - `gov jobs` / `gov events` / `gov ideas` — evidence and new ideas
 - `gov checkpoint` — SQLite backup, SHA-256 integrity, retention of newest 10
 - `gov jail probe` — inspect native Proxmox LXC availability
-- `gov jail new` — create a tiny **unprivileged, no-network** Alpine LXC from an existing cached template, 1 core, 256MB RAM, 2GB rootfs, onboot=0, tagged `ls-govern;sandbox`
+- `gov jail new` — create a tiny **unprivileged, no-network** Alpine LXC from a cached or automatically downloaded official Proxmox template, 1 core, 256MB RAM, 2GB rootfs, onboot=0, tagged `ls-govern;sandbox`
 - `gov jail start VMID` / `gov jail test VMID` / `gov jail stop VMID` / `gov jail retire VMID` — manage **only** identity-verified GOV-created LXCs
 
 Production services, unrelated LXCs and existing network settings are not modified. The program does not run downloaded third-party source code on the Proxmox host.
